@@ -1,39 +1,47 @@
 import { FunctionComponent, useState } from 'react';
+import { observer } from 'mobx-react';
 
-import { Box, Grid, IconButton, Paper, Typography } from '@mui/material';
+import { Box, Grid, IconButton, Paper, TextField, Typography } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import AddButton from 'components/AddButton';
+import AddButton from './AddButton';
 
-import { ChildType, ElementType } from 'components/interfaces';
+import { ElementType } from './interfaces';
 import ChildElements from './ChildElements';
+import ColorSwitcher from './ColorSwither';
 
-const Element: FunctionComponent<ElementType> = ({ name, root, addElement, removeElement }) => {
-    const [children, setChildren] = useState<ChildType[]>([]);
+const Element: FunctionComponent<ElementType> = observer(({ store, root }) => {
+    const {
+        title,
+        value,
+        sum,
+        color,
+        setValue,
+        addChild,
+        addElement,
+        childStore,
+        removeCurrent,
+        setColor
+    } = store;
+
     const [collapsed, setCollapsed] = useState(false);
 
-    const handleAddChild = (childName: string) => {
-        const tmp = [...children];
-        tmp.push({ name: childName });
-
-        setChildren(tmp);
+    const handleValue = (event: any) => {
+        setValue(event.currentTarget.value);
     };
 
-    const handleAddElement = (elementName: string) => {
-        addElement && addElement(elementName);
+    const handleAddChild = (childTitle?: string) => {
+        addChild(childTitle);
     };
 
-    const handleRemoveChild = (remIdx: number) => {
-        const tmp = [...children];
+    const handleAddElement = (elementTitle: string) => {
+        addElement(elementTitle);
+    };
 
-        setChildren(
-            tmp.filter((val, idx) => {
-                console.log(idx);
-                return idx !== remIdx;
-            })
-        );
+    const handleRemove = () => {
+        removeCurrent();
     };
 
     return (
@@ -43,22 +51,39 @@ const Element: FunctionComponent<ElementType> = ({ name, root, addElement, remov
                     <Grid item>
                         <IconButton
                             onClick={() => setCollapsed(val => !val)}
-                            disabled={!children.length}
+                            disabled={!childStore.length}
                         >
                             {!collapsed ? <RemoveCircleOutlineIcon /> : <AddCircleOutlineIcon />}
                         </IconButton>
                     </Grid>
                 )}
                 <Grid item>
-                    <Paper sx={{ position: 'relative', width: 250, p: 3 }}>
-                        <Typography sx={{ margin: 'auto' }}>{name}</Typography>
-                        <AddButton title="Add child" onClick={handleAddChild} />
-                        {!root && <AddButton title="Add element" onClick={handleAddElement} />}
+                    <Paper
+                        sx={{
+                            position: 'relative',
+                            width: 250,
+                            p: 3,
+                            border: `solid 3px ${color}`
+                        }}
+                    >
+                        <Typography>{title}</Typography>
+                        <Typography>{`Sum: ${sum}`}</Typography>
+                        {!root && (
+                            <TextField
+                                size="small"
+                                value={value}
+                                onChange={handleValue}
+                                type="number"
+                            />
+                        )}
+                        <ColorSwitcher color={color} setColor={setColor} />
+                        <AddButton defaultName title="Add child" handleClick={handleAddChild} />
+                        {!root && <AddButton title="Add element" handleClick={handleAddElement} />}
                         {!root && (
                             <IconButton
                                 color="error"
                                 sx={{ position: 'absolute', top: 0, right: 0, m: 1 }}
-                                onClick={removeElement}
+                                onClick={handleRemove}
                             >
                                 <DeleteIcon />
                             </IconButton>
@@ -67,14 +92,9 @@ const Element: FunctionComponent<ElementType> = ({ name, root, addElement, remov
                 </Grid>
             </Grid>
 
-            <ChildElements
-                collapsed={collapsed}
-                childList={children}
-                addElement={handleAddChild}
-                removeElement={handleRemoveChild}
-            />
+            <ChildElements collapsed={collapsed} childList={childStore} />
         </Box>
     );
-};
+});
 
 export default Element;

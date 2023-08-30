@@ -1,27 +1,18 @@
 import { FunctionComponent } from 'react';
 
 import { Box } from '@mui/material';
-import Element from 'components/Element';
+import Element from './Element';
 
-import { ChildElementsType } from 'components/interfaces';
+import { ChildElementsType } from './interfaces';
+import ElementStore from '../store/ElementStore';
 
-const ChildElements: FunctionComponent<ChildElementsType> = ({
-    childList,
-    collapsed,
-    addElement,
-    removeElement
-}) => {
+const ChildElements: FunctionComponent<ChildElementsType> = ({ childList, collapsed }) => {
     const hidden = collapsed ? { height: 0, overflow: 'hidden' } : {};
 
     return (
         <Box sx={{ ...{ ml: 4 }, ...hidden }}>
-            {childList.map((child, index) => (
-                <Element
-                    key={child.name}
-                    name={child.name}
-                    addElement={addElement}
-                    removeElement={() => removeElement(index)}
-                />
+            {childList.map((store: ElementStore, index: number) => (
+                <Element key={index} store={store} />
             ))}
         </Box>
     );

@@ -1,13 +1,14 @@
 import './App.css';
 
-import Element from 'components/Element';
+import Element from './components/Element';
+import ElementStore from './store/ElementStore';
 
-function App() {
-    return (
-        <div className="App">
-            <Element name="Root element" root />
-        </div>
-    );
-}
+const elementStore = new ElementStore('Root element', 0);
+
+const App = () => (
+    <div className="App">
+        <Element root store={elementStore} />
+    </div>
+);
 
 export default App;

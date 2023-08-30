@@ -2,14 +2,16 @@ import { FunctionComponent, useState } from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent, TextField } from '@mui/material';
 
-import { AddButtonType } from 'components/interfaces';
+import { AddButtonType } from './interfaces';
 
-const AddButton: FunctionComponent<AddButtonType> = ({ title, onClick }) => {
+const AddButton: FunctionComponent<AddButtonType> = ({ title, defaultName, handleClick }) => {
     const [open, setOpen] = useState(false);
     const [name, setName] = useState('');
 
     const handleOpen = () => {
-        setOpen(true);
+        if (defaultName) {
+            handleClick('');
+        } else setOpen(true);
     };
 
     const handleClose = () => {
@@ -18,7 +20,7 @@ const AddButton: FunctionComponent<AddButtonType> = ({ title, onClick }) => {
     };
 
     const handleConfirm = () => {
-        onClick(name);
+        handleClick(name);
         handleClose();
     };
 
