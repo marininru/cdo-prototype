@@ -24,7 +24,7 @@ class ElementStore {
 
     @action setValue = (newVal: string) => {
         this.value = Number(newVal);
-        this.parentStore?.reCalcValue();
+        this.parentStore?.reCalcValue(this.sum);
     };
 
     @action addChild = (title?: string) => {
