@@ -7,17 +7,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import AddButton from 'components/AddButton';
 
-type ChildType = {
-    name: string;
-    color?: string;
-};
-
-interface ElementType {
-    name: string;
-    root?: boolean;
-    addElement?: (name: string) => unknown;
-    removeElement?: () => unknown;
-}
+import { ChildType, ElementType } from 'components/interfaces';
+import ChildElements from './ChildElements';
 
 const Element: FunctionComponent<ElementType> = ({ name, root, addElement, removeElement }) => {
     const [children, setChildren] = useState<ChildType[]>([]);
@@ -76,18 +67,12 @@ const Element: FunctionComponent<ElementType> = ({ name, root, addElement, remov
                 </Grid>
             </Grid>
 
-            {!collapsed && (
-                <Box sx={{ ml: 4 }}>
-                    {children.map((child, index) => (
-                        <Element
-                            key={child.name}
-                            name={child.name}
-                            addElement={handleAddChild}
-                            removeElement={() => handleRemoveChild(index)}
-                        />
-                    ))}
-                </Box>
-            )}
+            <ChildElements
+                collapsed={collapsed}
+                childList={children}
+                addElement={handleAddChild}
+                removeElement={handleRemoveChild}
+            />
         </Box>
     );
 };

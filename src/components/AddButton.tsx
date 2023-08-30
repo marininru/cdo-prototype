@@ -1,18 +1,8 @@
 import { FunctionComponent, useState } from 'react';
 
-import {
-    Button,
-    ButtonProps,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    TextField
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, TextField } from '@mui/material';
 
-interface AddButtonType extends Omit<ButtonProps, 'button'> {
-    title: string;
-    onClick: (name: string) => unknown;
-}
+import { AddButtonType } from 'components/interfaces';
 
 const AddButton: FunctionComponent<AddButtonType> = ({ title, onClick }) => {
     const [open, setOpen] = useState(false);
