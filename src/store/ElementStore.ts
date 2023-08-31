@@ -2,6 +2,8 @@ import { action, observable, makeAutoObservable } from 'mobx';
 
 import { v4 as uuidv4 } from 'uuid';
 
+import ElementTreeStore from './ElementTreeStore';
+
 class ElementStore {
     private guid = uuidv4();
 
@@ -28,11 +30,13 @@ class ElementStore {
     };
 
     @action addChild = (title?: string) => {
-        const index = this.childStore.length;
+        const index = ElementTreeStore.getIndex();
         const child = new ElementStore(title || `item-${index}`, index, this);
 
         const tmpChildList = [...this.childStore];
         tmpChildList.push(child);
+
+        ElementTreeStore.addElement(child);
 
         this.childStore = tmpChildList;
     };
