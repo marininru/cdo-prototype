@@ -24,7 +24,7 @@ class ElementStore {
 
     @action setValue = (newVal: string) => {
         this.value = Number(newVal);
-        this.parentStore?.reCalcValue(this.sum);
+        this.parentStore?.reCalcValue();
     };
 
     @action addChild = (title?: string) => {
@@ -51,13 +51,12 @@ class ElementStore {
         this.parentStore?.addChild(title);
     };
 
-    @action reCalcValue = (initSum?: number) => {
-        const childSum =
+    @action reCalcValue = () => {
+        this.sum =
             this.childStore
-                .map(store => store.value)
-                .reduce((sum, value) => (sum || 0) + (value || 0), initSum || 0) || 0;
-        this.sum = childSum;
-        this.parentStore?.reCalcValue(childSum);
+                .map(store => (store.value || 0) + store.sum)
+                .reduce((sum, value) => (sum || 0) + (value || 0)) || 0;
+        this.parentStore?.reCalcValue();
     };
 
     @action setColor = (color: string) => {
