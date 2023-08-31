@@ -19,7 +19,9 @@ class TaskStore {
 
             if (task) {
                 LogStore.addRecord(
-                    `${moment().format('HH:mm:ss')}: Run task ${task.method} for node ${task.name}`
+                    `${moment().format('HH:mm:ss')}: Run task #${task.index}: method "${
+                        task.method
+                    }" for node ${task.name}`
                 );
                 task.runTask();
             }
@@ -27,13 +29,17 @@ class TaskStore {
     }
 
     @action addTask = (task: Task) => {
-        LogStore.addRecord(
-            `${moment().format('HH:mm:ss')}: Add task ${task.method} for node ${task.name}`
-        );
         const tmpList = [...this.taskQueue];
         tmpList.push(task);
 
         task.setIndex(this.count);
+
+        LogStore.addRecord(
+            `${moment().format('HH:mm:ss')}: Add task #${task.index}: method "${
+                task.method
+            }" for node ${task.name}`
+        );
+
         this.count = ++this.count;
 
         this.taskQueue = tmpList;
