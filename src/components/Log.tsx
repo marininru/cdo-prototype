@@ -14,7 +14,7 @@ const Log = observer(() => {
     return (
         <Box sx={{ height: '80%', m: 4 }}>
             <Box sx={{ height: '100%', overflow: 'auto', textAlign: 'justify' }}>
-                {log.map((rec, index) => (
+                {[...log].reverse().map((rec, index) => (
                     <Typography key={index}>{rec}</Typography>
                 ))}
             </Box>
