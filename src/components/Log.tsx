@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 
 import LogStore from '../store/LogStore';
 
@@ -12,16 +12,13 @@ const Log = observer(() => {
     };
 
     return (
-        <Box sx={{ m: 4 }}>
-            <TextField
-                fullWidth
-                value={log.join(`\n`)}
-                multiline
-                rows={20}
-                disabled
-                sx={{ mb: 2 }}
-            />
-            <Button onClick={handleClear} variant="contained">
+        <Box sx={{ height: '80%', m: 4 }}>
+            <Box sx={{ height: '100%', overflow: 'auto', textAlign: 'justify' }}>
+                {log.map((rec, index) => (
+                    <Typography key={index}>{rec}</Typography>
+                ))}
+            </Box>
+            <Button onClick={handleClear} variant="contained" sx={{ mt: 2 }}>
                 Clear log
             </Button>
         </Box>

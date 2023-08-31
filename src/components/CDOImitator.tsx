@@ -19,7 +19,7 @@ const CDOImitator = () => (
             </Box>
         </Grid>
         <Grid container item sx={{ height: '100vh' }} xs={5} direction="column">
-            <Grid item xs={6}>
+            <Grid item xs={6} sx={{ overflow: 'hidden' }}>
                 <Log />
             </Grid>
             <Grid item xs={6}>
