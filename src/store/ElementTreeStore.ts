@@ -16,6 +16,8 @@ class ElementTree {
         this.elementTree = tmpChildList;
     };
 
+    getElement = (guid: string) => this.elementTree.find(element => element.getGuid() === guid);
+
     getIndex = () => this.elementTree.length;
 }
 

@@ -5,6 +5,7 @@ import { Box, Grid, IconButton, Paper, TextField, Typography } from '@mui/materi
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CheckIcon from '@mui/icons-material/Check';
 
 import AddButton from './AddButton';
 
@@ -13,31 +14,22 @@ import ChildElements from './ChildElements';
 import ColorSwitcher from './ColorSwither';
 
 const Element: FunctionComponent<ElementType> = observer(({ store, root }) => {
-    const {
-        title,
-        value,
-        sum,
-        color,
-        setValue,
-        addChild,
-        addElement,
-        childStore,
-        removeCurrent,
-        setColor
-    } = store;
+    const { title, value, sum, color, setValue, addChild, childStore, removeCurrent, setColor } =
+        store;
 
+    const [localVal, setLocalVal] = useState(`${value}` || '');
     const [collapsed, setCollapsed] = useState(false);
 
     const handleValue = (event: any) => {
-        setValue(event.currentTarget.value);
+        setLocalVal(event.currentTarget.value);
+    };
+
+    const handleConfirm = () => {
+        if (`${value}` !== localVal) setValue(localVal);
     };
 
     const handleAddChild = (childTitle?: string) => {
         addChild(childTitle);
-    };
-
-    const handleAddElement = (elementTitle: string) => {
-        addElement(elementTitle);
     };
 
     const handleRemove = () => {
@@ -69,16 +61,25 @@ const Element: FunctionComponent<ElementType> = observer(({ store, root }) => {
                         <Typography>{title}</Typography>
                         <Typography>{`Sum: ${sum}`}</Typography>
                         {!root && (
-                            <TextField
-                                size="small"
-                                value={value}
-                                onChange={handleValue}
-                                type="number"
-                            />
+                            <Grid container>
+                                <Grid item xs={10}>
+                                    <TextField
+                                        size="small"
+                                        value={localVal}
+                                        onChange={handleValue}
+                                        type="number"
+                                        onBlur={handleConfirm}
+                                    />
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <IconButton onClick={handleConfirm}>
+                                        <CheckIcon />
+                                    </IconButton>
+                                </Grid>
+                            </Grid>
                         )}
                         <ColorSwitcher color={color} setColor={setColor} />
                         <AddButton defaultName title="Add child" handleClick={handleAddChild} />
-                        {!root && <AddButton title="Add element" handleClick={handleAddElement} />}
                         {!root && (
                             <IconButton
                                 color="error"

@@ -3,6 +3,8 @@ import { action, observable, makeAutoObservable } from 'mobx';
 import { v4 as uuidv4 } from 'uuid';
 
 import ElementTreeStore from './ElementTreeStore';
+import TaskStore from './TaskStore';
+import Task from '../Task';
 
 class ElementStore {
     private guid = uuidv4();
@@ -26,7 +28,8 @@ class ElementStore {
 
     @action setValue = (newVal: string) => {
         this.value = Number(newVal);
-        this.parentStore?.reCalcValue();
+
+        this.addReCalcTask();
     };
 
     @action addChild = (title?: string) => {
@@ -42,7 +45,7 @@ class ElementStore {
     };
 
     @action removeCurrent = () => {
-        this.parentStore?.removeChild(this.guid);
+        this.addRemoveTask();
     };
 
     @action removeChild = (rmGuid: string) => {
@@ -52,7 +55,7 @@ class ElementStore {
     };
 
     @action addElement = (title: string) => {
-        this.parentStore?.addChild(title);
+        this.addNewChildTask(title);
     };
 
     @action reCalcValue = () => {
@@ -60,7 +63,7 @@ class ElementStore {
             this.childStore
                 .map(store => (store.value || 0) + store.sum)
                 .reduce((sum, value) => (sum || 0) + (value || 0)) || 0;
-        this.parentStore?.reCalcValue();
+        this.addReCalcTask();
     };
 
     @action setColor = (color: string) => {
@@ -68,6 +71,32 @@ class ElementStore {
     };
 
     getGuid = () => this.guid;
+
+    addTask = (method: string, context?: any) => {
+        if (this.parentStore) {
+            const task = new Task(
+                this.parentStore.title,
+                this.parentStore.getGuid(),
+                method,
+                this.title,
+                context
+            );
+            TaskStore.addTask(task);
+        }
+    };
+
+    addReCalcTask = () => {
+        this.addTask('reCalcValue');
+    };
+
+    addNewChildTask = (title: string) => {
+        this.addTask('addChild', title);
+    };
+
+    addRemoveTask = () => {
+        this.addTask('removeChild', this.guid);
+        this.addTask('reCalcValue');
+    };
 }
 
 export default ElementStore;
