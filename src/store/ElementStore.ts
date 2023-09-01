@@ -47,6 +47,8 @@ class ElementStore {
         tmpChildList.push(childGuid);
 
         this.childStore = tmpChildList;
+
+        if (this.childStore.length === 1) this.addBalanceTask(this.value);
     };
 
     @action removeCurrent = () => {
