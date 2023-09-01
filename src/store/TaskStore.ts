@@ -9,23 +9,14 @@ import Task from '../Task';
 class TaskStore {
     private count = 0;
 
+    @observable pause = 2000;
+    @observable timerID?: any;
     @observable taskQueue: Task[] = [];
 
     constructor() {
         makeAutoObservable(this);
 
-        setInterval(() => {
-            const task = this.taskQueue.shift();
-
-            if (task) {
-                LogStore.addRecord(
-                    `${moment().format('HH:mm:ss')}: Run task #${task.index}: method "${
-                        task.method
-                    }" for node ${task.name}`
-                );
-                task.runTask();
-            }
-        }, 2000);
+        this.runTask(this.pause);
     }
 
     @action addTask = (guid: string, method: string, initiator: string, context?: any) => {
@@ -45,6 +36,27 @@ class TaskStore {
         this.count = ++this.count;
 
         this.taskQueue = tmpList;
+    };
+
+    @action setPause = (pause: number) => {
+        this.pause = pause;
+        clearInterval(this.timerID);
+        this.runTask(pause);
+    };
+
+    @action runTask = (pause: number) => {
+        this.timerID = setInterval(() => {
+            const task = this.taskQueue.shift();
+
+            if (task) {
+                LogStore.addRecord(
+                    `${moment().format('HH:mm:ss')}: Run task #${task.index}: method "${
+                        task.method
+                    }" for node ${task.name}`
+                );
+                task.run();
+            }
+        }, pause);
     };
 }
 

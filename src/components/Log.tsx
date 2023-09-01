@@ -12,7 +12,10 @@ const Log = observer(() => {
     };
 
     return (
-        <Box sx={{ height: '80%', m: 4 }}>
+        <Box sx={{ height: '70%', m: 4 }}>
+            <Typography variant="h4" gutterBottom>
+                Log
+            </Typography>
             <Box sx={{ height: '100%', overflow: 'auto', textAlign: 'justify' }}>
                 {[...log].reverse().map((rec, index) => (
                     <Typography key={index}>{rec}</Typography>

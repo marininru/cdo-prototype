@@ -21,7 +21,7 @@ export interface AddButtonType extends Omit<ButtonProps, 'button'> {
 }
 
 export interface ChildElementsType {
-    childList: ElementStore[];
+    childList: string[];
     collapsed: boolean;
 }
 

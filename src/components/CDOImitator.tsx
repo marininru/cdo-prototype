@@ -4,26 +4,25 @@ import Element from './Element';
 import Log from './Log';
 import TaskQuery from './TaskQuery';
 
-import ElementStore from '../store/ElementStore';
 import ElementTreeStore from '../store/ElementTreeStore';
 
-const elementStore = new ElementStore('Root element', 0);
+const rootGuid = ElementTreeStore.addElement(undefined, 'Root element');
 
-ElementTreeStore.addElement(elementStore);
+const rootElement = ElementTreeStore.getElement(rootGuid);
 
 const CDOImitator = () => (
     <Grid container sx={{ width: '100vw' }}>
-        <Grid item xs={7}>
+        <Grid item xs={6}>
             <Box sx={{ height: '100vh', overflow: 'auto' }}>
-                <Element root store={elementStore} />
+                {rootElement && <Element root store={rootElement} />}
             </Box>
         </Grid>
-        <Grid container item sx={{ height: '100vh' }} xs={5} direction="column">
+        <Grid container item sx={{ height: '100vh' }} xs={6} direction="column">
+            <Grid item xs={6} sx={{ overflow: 'hidden' }}>
+                <TaskQuery />
+            </Grid>
             <Grid item xs={6} sx={{ overflow: 'hidden' }}>
                 <Log />
-            </Grid>
-            <Grid item xs={6}>
-                <TaskQuery />
             </Grid>
         </Grid>
     </Grid>

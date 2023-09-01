@@ -28,7 +28,7 @@ class Task {
         this.index = index;
     };
 
-    runTask = () => {
+    run = () => {
         const element = ElementTreeStore.getElement(this.guid);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore

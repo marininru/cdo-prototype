@@ -12,7 +12,7 @@ class ElementStore {
     public title: string;
 
     @observable parentGuid?: string;
-    @observable childStore: ElementStore[] = [];
+    @observable childStore: string[] = [];
     @observable value = 0;
     @observable completed = false;
     @observable color = '#119507';
@@ -24,7 +24,7 @@ class ElementStore {
 
         makeAutoObservable(this);
 
-        this.addCalcStatusTask();
+        if (parentGuid) this.addCalcStatusTask();
     }
 
     @action setValue = (newVal: string) => {
@@ -40,13 +40,10 @@ class ElementStore {
     };
 
     @action addChild = (title?: string) => {
-        const index = ElementTreeStore.getIndex();
-        const child = new ElementStore(title || `item-${index}`, index, this.guid);
+        const childGuid = ElementTreeStore.addElement(this.guid, title);
 
         const tmpChildList = [...this.childStore];
-        tmpChildList.push(child);
-
-        ElementTreeStore.addElement(child);
+        tmpChildList.push(childGuid);
 
         this.childStore = tmpChildList;
     };
@@ -58,7 +55,7 @@ class ElementStore {
     @action removeChild = (rmGuid: string) => {
         const tmpChildList = [...this.childStore];
 
-        this.childStore = tmpChildList.filter(store => store.getGuid() !== rmGuid);
+        this.childStore = tmpChildList.filter(guid => guid !== rmGuid);
     };
 
     @action addElement = (title: string) => {
@@ -67,7 +64,9 @@ class ElementStore {
 
     @action reCalcValue = () => {
         this.value =
-            this.childStore.map(store => store.value).reduce((sum, value) => sum + value, 0) || 0;
+            this.childStore
+                .map(guid => ElementTreeStore.getElement(guid)?.value || 0)
+                .reduce((sum, value) => sum + value, 0) || 0;
         this.addReCalcTask();
     };
 
@@ -88,7 +87,7 @@ class ElementStore {
         if (!this.childStore.length) return this.completed;
 
         return this.childStore
-            .map(child => child.completed)
+            .map(guid => !!ElementTreeStore.getElement(guid)?.completed)
             .reduce((result, completed) => result && completed, true);
     };
 
