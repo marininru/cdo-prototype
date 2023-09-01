@@ -31,6 +31,7 @@ class ElementStore {
         this.value = Number(newVal);
 
         this.addReCalcTask();
+        this.addBalanceTask(Number(newVal));
     };
 
     @action setStatus = (completed: boolean) => {
@@ -72,6 +73,10 @@ class ElementStore {
         this.addReCalcTask();
     };
 
+    @action balanceValue = ({ value, sum }: { value: number; sum: number }) => {
+        this.value = value - sum + this.value;
+    };
+
     @action calcStatus = () => {
         this.setStatus(this.getChildrenCompleted());
     };
@@ -84,6 +89,11 @@ class ElementStore {
 
     getChildrenExists = () => !!this.childStore.length;
 
+    getChildrenSum = () =>
+        this.childStore
+            .map(guid => ElementTreeStore.getElement(guid)?.value || 0)
+            .reduce((sum, value) => sum + value, 0) || 0;
+
     getChildrenCompleted = (): boolean => {
         if (!this.childStore.length) return this.completed;
 
@@ -92,27 +102,42 @@ class ElementStore {
             .reduce((result, completed) => result && completed, true);
     };
 
-    addTask = (method: string, context?: any) => {
+    addParentTask = (method: string, context?: any) => {
         if (this.parentGuid) {
             TaskStore.addTask(this.parentGuid, method, this.title, context);
         }
     };
 
     addReCalcTask = () => {
-        this.addTask('reCalcValue');
+        this.addParentTask('reCalcValue');
     };
 
     addCalcStatusTask = () => {
-        this.addTask('calcStatus');
+        this.addParentTask('calcStatus');
     };
 
     addNewChildTask = (title: string) => {
-        this.addTask('addChild', title);
+        this.addParentTask('addChild', title);
     };
 
     addRemoveTask = () => {
-        this.addTask('removeChild', this.guid);
-        this.addTask('reCalcValue');
+        this.addParentTask('removeChild', this.guid);
+        this.addParentTask('reCalcValue');
+    };
+
+    addBalanceTask = (value: number) => {
+        const sum = this.getChildrenSum();
+
+        if (sum !== value) {
+            const child = this.childStore[0];
+
+            if (child) {
+                TaskStore.addTask(this.childStore[0], 'balanceValue', this.title, {
+                    value,
+                    sum
+                });
+            }
+        }
     };
 }
 
