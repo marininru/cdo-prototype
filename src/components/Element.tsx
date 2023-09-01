@@ -78,45 +78,42 @@ const Element: FunctionComponent<ElementType> = observer(({ store, root }) => {
                         }}
                     >
                         <Typography>{title}</Typography>
-                        {root && <Typography>{`Sum: ${value}`}</Typography>}
-                        {!root && (
-                            <Grid container spacing={1}>
-                                <Grid item xs={6}>
-                                    <TextField
-                                        size="small"
-                                        value={localVal}
-                                        onChange={handleValue}
-                                        type="number"
-                                        onBlur={handleConfirm}
-                                    />
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <IconButton
-                                        color={completed ? 'primary' : 'success'}
-                                        onClick={handleChangeStatus}
-                                        disabled={getChildrenExists() && !getChildrenCompleted()}
-                                    >
-                                        {completed ? <TaskAltIcon /> : <RadioButtonUncheckedIcon />}
-                                    </IconButton>
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <AddButton
-                                        icon
-                                        defaultName
-                                        title="Add child"
-                                        handleClick={handleAddChild}
-                                    />
-                                </Grid>
+
+                        <Grid container spacing={1}>
+                            <Grid item xs={root ? 8 : 6}>
+                                <TextField
+                                    size="small"
+                                    value={localVal}
+                                    onChange={handleValue}
+                                    type="number"
+                                    onBlur={handleConfirm}
+                                />
+                            </Grid>
+                            <Grid item xs={2}>
+                                <IconButton
+                                    color={completed ? 'primary' : 'success'}
+                                    onClick={handleChangeStatus}
+                                    disabled={getChildrenExists() && !getChildrenCompleted()}
+                                >
+                                    {completed ? <TaskAltIcon /> : <RadioButtonUncheckedIcon />}
+                                </IconButton>
+                            </Grid>
+                            <Grid item xs={2}>
+                                <AddButton
+                                    icon
+                                    defaultName
+                                    title="Add child"
+                                    handleClick={handleAddChild}
+                                />
+                            </Grid>
+                            {!root && (
                                 <Grid item xs={2}>
                                     <IconButton color="error" onClick={handleRemove}>
                                         <DeleteIcon />
                                     </IconButton>
                                 </Grid>
-                            </Grid>
-                        )}
-                        {root && (
-                            <AddButton defaultName title="Add child" handleClick={handleAddChild} />
-                        )}
+                            )}
+                        </Grid>
                     </Paper>
                 </Grid>
             </Grid>
