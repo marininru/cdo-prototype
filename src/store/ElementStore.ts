@@ -75,6 +75,8 @@ class ElementStore {
 
     @action balanceValue = ({ value, sum }: { value: number; sum: number }) => {
         this.value = value - sum + this.value;
+
+        this.addBalanceTask(this.value);
     };
 
     @action calcStatus = () => {
