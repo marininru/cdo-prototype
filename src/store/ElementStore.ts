@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 import ElementTreeStore from './ElementTreeStore';
 import TaskStore from './TaskStore';
-import Task from '../Task';
 
 class ElementStore {
     private guid = uuidv4();
@@ -12,16 +11,16 @@ class ElementStore {
     public index: number;
     public title: string;
 
-    @observable parentStore?: ElementStore;
+    @observable parentGuid?: string;
     @observable childStore: ElementStore[] = [];
     @observable value = 0;
     @observable completed = false;
     @observable color = '#119507';
 
-    constructor(title: string, index: number, parentStore?: ElementStore) {
+    constructor(title: string, index: number, parentGuid?: string) {
         this.index = index;
         this.title = title;
-        this.parentStore = parentStore;
+        this.parentGuid = parentGuid;
 
         makeAutoObservable(this);
     }
@@ -40,7 +39,7 @@ class ElementStore {
 
     @action addChild = (title?: string) => {
         const index = ElementTreeStore.getIndex();
-        const child = new ElementStore(title || `item-${index}`, index, this);
+        const child = new ElementStore(title || `item-${index}`, index, this.guid);
 
         const tmpChildList = [...this.childStore];
         tmpChildList.push(child);
@@ -92,15 +91,8 @@ class ElementStore {
     };
 
     addTask = (method: string, context?: any) => {
-        if (this.parentStore) {
-            const task = new Task(
-                this.parentStore.title,
-                this.parentStore.getGuid(),
-                method,
-                this.title,
-                context
-            );
-            TaskStore.addTask(task);
+        if (this.parentGuid) {
+            TaskStore.addTask(this.parentGuid, method, this.title, context);
         }
     };
 

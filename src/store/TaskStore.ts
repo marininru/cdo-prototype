@@ -25,10 +25,12 @@ class TaskStore {
                 );
                 task.runTask();
             }
-        }, 5000);
+        }, 2000);
     }
 
-    @action addTask = (task: Task) => {
+    @action addTask = (guid: string, method: string, initiator: string, context?: any) => {
+        const task = new Task(guid, method, initiator, context);
+
         const tmpList = [...this.taskQueue];
         tmpList.push(task);
 
