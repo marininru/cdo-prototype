@@ -19,6 +19,15 @@ class TaskStore {
         this.runTask(this.pause);
     }
 
+    @action shiftTask = () => {
+        const taskQueue = [...this.taskQueue];
+        const task = taskQueue.shift();
+
+        this.taskQueue = taskQueue;
+
+        return task;
+    };
+
     @action addTask = (guid: string, method: string, initiator: string, context?: any) => {
         const task = new Task(guid, method, initiator, context);
 
@@ -46,7 +55,7 @@ class TaskStore {
 
     @action runTask = (pause: number) => {
         this.timerID = setInterval(() => {
-            const task = this.taskQueue.shift();
+            const task = this.shiftTask();
 
             if (task) {
                 LogStore.addRecord(
