@@ -23,6 +23,8 @@ class ElementStore {
         this.parentGuid = parentGuid;
 
         makeAutoObservable(this);
+
+        this.addCalcStatusTask();
     }
 
     @action setValue = (newVal: string) => {
@@ -34,7 +36,7 @@ class ElementStore {
     @action setStatus = (completed: boolean) => {
         this.completed = completed;
         this.color = completed ? '#1f52c1' : '#119507';
-        this.addCalcStatus();
+        this.addCalcStatusTask();
     };
 
     @action addChild = (title?: string) => {
@@ -100,7 +102,7 @@ class ElementStore {
         this.addTask('reCalcValue');
     };
 
-    addCalcStatus = () => {
+    addCalcStatusTask = () => {
         this.addTask('calcStatus');
     };
 
