@@ -11,7 +11,7 @@ class ElementTree {
 
     @action addElement = (parentGuid?: string, title?: string) => {
         const index = this.getIndex();
-        const name = title || `item-${index}`;
+        const name = title || `${index}`;
         const element = new ElementStore(name, index, parentGuid);
 
         const tmpChildList = [...this.elementTree];

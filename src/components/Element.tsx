@@ -78,10 +78,10 @@ const Element: FunctionComponent<ElementType> = observer(({ store, root }) => {
                         }}
                     >
                         <Grid container spacing={1}>
-                            <Grid item alignSelf="center" xs={3}>
+                            <Grid item alignSelf="center" xs={root ? 3 : 1}>
                                 <Typography>{title}</Typography>
                             </Grid>
-                            <Grid item xs={root ? 5 : 3}>
+                            <Grid item xs={root ? 5 : 5}>
                                 <TextField
                                     size="small"
                                     value={localVal}
