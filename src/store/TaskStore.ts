@@ -9,7 +9,7 @@ import Task from '../Task';
 class TaskStore {
     private count = 0;
 
-    @observable pause = 2000;
+    @observable pause = 1000;
     @observable timerID?: any;
     @observable taskQueue: Task[] = [];
 
