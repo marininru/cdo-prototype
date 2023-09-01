@@ -15,6 +15,7 @@ export interface ElementType {
 
 export interface AddButtonType extends Omit<ButtonProps, 'button'> {
     title: string;
+    icon?: boolean;
     defaultName?: boolean;
     handleClick: (name: string) => unknown;
 }

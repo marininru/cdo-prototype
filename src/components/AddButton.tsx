@@ -1,10 +1,11 @@
 import { FunctionComponent, useState } from 'react';
 
-import { Button, Dialog, DialogActions, DialogContent, TextField } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, IconButton, TextField } from '@mui/material';
 
+import AddIcon from '@mui/icons-material/Add';
 import { AddButtonType } from './interfaces';
 
-const AddButton: FunctionComponent<AddButtonType> = ({ title, defaultName, handleClick }) => {
+const AddButton: FunctionComponent<AddButtonType> = ({ icon, title, defaultName, handleClick }) => {
     const [open, setOpen] = useState(false);
     const [name, setName] = useState('');
 
@@ -30,7 +31,13 @@ const AddButton: FunctionComponent<AddButtonType> = ({ title, defaultName, handl
 
     return (
         <>
-            <Button onClick={handleOpen}>{title}</Button>
+            {icon ? (
+                <IconButton onClick={handleOpen}>
+                    <AddIcon />
+                </IconButton>
+            ) : (
+                <Button onClick={handleOpen}>{title}</Button>
+            )}
             <Dialog open={open} onClose={handleClose}>
                 <DialogContent>
                     <TextField onChange={handleChange} value={name} />

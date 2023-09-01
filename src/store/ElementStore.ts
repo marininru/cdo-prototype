@@ -14,9 +14,9 @@ class ElementStore {
 
     @observable parentStore?: ElementStore;
     @observable childStore: ElementStore[] = [];
-    @observable value?: number;
-    @observable sum = 0;
-    @observable color = 'grey';
+    @observable value = 0;
+    @observable completed = false;
+    @observable color = '#119507';
 
     constructor(title: string, index: number, parentStore?: ElementStore) {
         this.index = index;
@@ -30,6 +30,12 @@ class ElementStore {
         this.value = Number(newVal);
 
         this.addReCalcTask();
+    };
+
+    @action setStatus = (completed: boolean) => {
+        this.completed = completed;
+        this.color = completed ? '#1f52c1' : '#119507';
+        this.addCalcStatus();
     };
 
     @action addChild = (title?: string) => {
@@ -59,10 +65,13 @@ class ElementStore {
     };
 
     @action reCalcValue = () => {
-        this.sum =
-            this.childStore
-                .map(store => (store.value || 0) + store.sum)
-                .reduce((sum, value) => (sum || 0) + (value || 0)) || 0;
+        this.value =
+            this.childStore.map(store => store.value).reduce((sum, value) => sum + value, 0) || 0;
+        this.addReCalcTask();
+    };
+
+    @action calcStatus = () => {
+        this.setStatus(this.getChildrenCompleted());
         this.addReCalcTask();
     };
 
@@ -71,6 +80,16 @@ class ElementStore {
     };
 
     getGuid = () => this.guid;
+
+    getChildrenExists = () => !!this.childStore.length;
+
+    getChildrenCompleted = (): boolean => {
+        if (!this.childStore.length) return this.completed;
+
+        return this.childStore
+            .map(child => child.getChildrenCompleted())
+            .reduce((result, completed) => result && completed, true);
+    };
 
     addTask = (method: string, context?: any) => {
         if (this.parentStore) {
@@ -87,6 +106,10 @@ class ElementStore {
 
     addReCalcTask = () => {
         this.addTask('reCalcValue');
+    };
+
+    addCalcStatus = () => {
+        this.addTask('calcStatus');
     };
 
     addNewChildTask = (title: string) => {
