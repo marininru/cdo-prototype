@@ -6,7 +6,7 @@ import TaskQuery from './TaskQuery';
 
 import ElementTreeStore from '../store/ElementTreeStore';
 
-const rootGuid = ElementTreeStore.addElement(undefined, 'Root element');
+const rootGuid = ElementTreeStore.addElement(undefined, 'Root');
 
 const rootElement = ElementTreeStore.getElement(rootGuid);
 

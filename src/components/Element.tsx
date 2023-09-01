@@ -77,10 +77,11 @@ const Element: FunctionComponent<ElementType> = observer(({ store, root }) => {
                             border: `solid 3px ${color}`
                         }}
                     >
-                        <Typography>{title}</Typography>
-
                         <Grid container spacing={1}>
-                            <Grid item xs={root ? 8 : 6}>
+                            <Grid item alignSelf="center" xs={3}>
+                                <Typography>{title}</Typography>
+                            </Grid>
+                            <Grid item xs={root ? 5 : 3}>
                                 <TextField
                                     size="small"
                                     value={localVal}
