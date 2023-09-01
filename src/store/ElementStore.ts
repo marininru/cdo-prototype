@@ -86,7 +86,7 @@ class ElementStore {
         if (!this.childStore.length) return this.completed;
 
         return this.childStore
-            .map(child => child.getChildrenCompleted())
+            .map(child => child.completed)
             .reduce((result, completed) => result && completed, true);
     };
 
