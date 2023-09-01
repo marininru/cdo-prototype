@@ -56,6 +56,8 @@ class ElementStore {
         const tmpChildList = [...this.childStore];
 
         this.childStore = tmpChildList.filter(guid => guid !== rmGuid);
+
+        this.setStatus(this.getChildrenCompleted());
     };
 
     @action addElement = (title: string) => {
@@ -72,7 +74,6 @@ class ElementStore {
 
     @action calcStatus = () => {
         this.setStatus(this.getChildrenCompleted());
-        this.addReCalcTask();
     };
 
     @action setColor = (color: string) => {
