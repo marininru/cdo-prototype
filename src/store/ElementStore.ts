@@ -1,6 +1,7 @@
 import { action, observable, makeAutoObservable } from 'mobx';
 
 import { v4 as uuidv4 } from 'uuid';
+import { TaskExecMode, TaskStatus, TaskStatusDescr } from 'common/TaskInterfaces';
 
 import ElementTreeStore from './ElementTreeStore';
 import TaskStore from './TaskStore';
@@ -15,16 +16,22 @@ class ElementStore {
     @observable childStore: string[] = [];
     @observable value = 0;
     @observable completed = false;
-    @observable color = '#119507';
+    @observable execMode: TaskExecMode;
+    @observable status: TaskStatus;
+    @observable color: string;
 
     constructor(title: string, index: number, parentGuid?: string) {
         this.index = index;
         this.title = title;
+        this.execMode = 'C';
+        this.status = 'W';
+        this.color = TaskStatusDescr[this.status].color;
+        this.completed = false;
         this.parentGuid = parentGuid;
 
         makeAutoObservable(this);
 
-        if (parentGuid) this.addCalcStatusTask();
+        // if (parentGuid) this.addCalcStatusTask();
     }
 
     @action setValue = (newVal: string) => {
@@ -34,10 +41,92 @@ class ElementStore {
         this.addBalanceTask(Number(newVal));
     };
 
-    @action setStatus = (completed: boolean) => {
-        this.completed = completed;
-        this.color = completed ? '#1f52c1' : '#119507';
-        this.addCalcStatusTask();
+    @action setStatus = (newStatus: TaskStatus, auto?: boolean) => {
+        const oldStatus = this.status;
+        let allowed: boolean = false;
+
+        const parent: ElementStore | undefined = ElementTreeStore.getElement(this.parentGuid || '');
+
+        const children: ElementStore[] = [];
+        this.childStore?.forEach((guid: string) => {
+            const el = ElementTreeStore.getElement(guid);
+            el && children.push(el);
+        });
+
+        const sisters: ElementStore[] = [];
+        parent?.childStore.forEach((guid: string) => {
+            const el = ElementTreeStore.getElement(guid);
+            el && sisters.push(el);
+        });
+
+        if (auto) {
+            allowed = true;
+        } else {
+            switch (oldStatus) {
+                case 'W':
+                    if (newStatus === 'R' && !parent) {
+                        allowed = true;
+                    }
+                    if (newStatus === 'C') {
+                        allowed = true;
+                    }
+                    break;
+                case 'R':
+                    if (newStatus === 'S') {
+                        allowed = true;
+                    }
+                    if (newStatus === 'C') {
+                        allowed = true;
+                    }
+                    break;
+                case 'S':
+                    if (newStatus === 'F') {
+                        let isChildrenFinished = true;
+                        children.forEach(child => {
+                            if (!['F', 'C'].includes(child.status)) isChildrenFinished = false;
+                        });
+                        allowed = isChildrenFinished;
+                    }
+                    if (newStatus === 'C' || newStatus === 'I') {
+                        allowed = true;
+                    }
+                    break;
+                case 'I':
+                    if (newStatus === 'S') {
+                        allowed = true;
+                    }
+                    if (newStatus === 'C') {
+                        allowed = true;
+                    }
+                    break;
+            }
+        }
+
+        if (allowed) {
+            this.status = newStatus;
+            this.color = TaskStatusDescr[newStatus].color;
+
+            if (newStatus === 'S') {
+                for (let i = 0; i < children.length; i++) {
+                    if (children[i].status === 'W') {
+                        children[i].setStatus('R', true);
+                        break;
+                    }
+                }
+            }
+
+            if (newStatus === 'F' || newStatus === 'C') {
+                parent?.setStatus('F', false);
+                for (let i = 0; i < sisters.length; i++) {
+                    if (sisters[i].status === 'W') {
+                        sisters[i].setStatus('R', true);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // this.addCalcStatusTask();
     };
 
     @action addChild = (title?: string) => {
@@ -60,7 +149,7 @@ class ElementStore {
 
         this.childStore = tmpChildList.filter(guid => guid !== rmGuid);
 
-        this.setStatus(this.getChildrenCompleted());
+        // this.setStatus(this.getChildrenCompleted());
     };
 
     @action addElement = (title: string) => {
@@ -82,7 +171,7 @@ class ElementStore {
     };
 
     @action calcStatus = () => {
-        this.setStatus(this.getChildrenCompleted());
+        // this.setStatus(this.getChildrenCompleted());
     };
 
     @action setColor = (color: string) => {

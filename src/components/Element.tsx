@@ -1,14 +1,16 @@
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, /* useEffect, */ useState } from 'react';
 import { observer } from 'mobx-react';
 
-import { Box, Grid, IconButton, Paper, TextField, Typography } from '@mui/material';
+import { Box, Grid, IconButton, Paper, /* TextField, */ Typography } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
-
+// import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+// import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import { TaskStatusDescr } from 'common/TaskInterfaces';
 import AddButton from './AddButton';
+
+import NewStatusMenu from './NewStatusMenu';
 
 import { ElementType } from './interfaces';
 import ChildElements from './ChildElements';
@@ -16,36 +18,38 @@ import ChildElements from './ChildElements';
 const Element: FunctionComponent<ElementType> = observer(({ store, root }) => {
     const {
         title,
-        value,
-        completed,
+        // value,
+        // completed,
+        status,
+        execMode,
         color,
-        setValue,
+        // setValue,
         addChild,
         childStore,
-        removeCurrent,
-        setStatus,
-        getChildrenExists,
-        getChildrenCompleted
+        removeCurrent
+        // setStatus,
+        // getChildrenExists,
+        // getChildrenCompleted
     } = store;
 
-    const [localVal, setLocalVal] = useState(`${value}` || '');
+    // const [localVal, setLocalVal] = useState(`${value}` || '');
     const [collapsed, setCollapsed] = useState(false);
 
-    useEffect(() => {
-        setLocalVal(`${value}`);
-    }, [value]);
+    // useEffect(() => {
+    //     setLocalVal(`${value}`);
+    // }, [value]);
 
-    const handleValue = (event: any) => {
-        setLocalVal(event.currentTarget.value);
-    };
+    // const handleValue = (event: any) => {
+    //     setLocalVal(event.currentTarget.value);
+    // };
 
-    const handleConfirm = () => {
-        if (`${value}` !== localVal) setValue(localVal);
-    };
+    // const handleConfirm = () => {
+    //     if (`${value}` !== localVal) setValue(localVal);
+    // };
 
-    const handleChangeStatus = () => {
-        setStatus(!completed);
-    };
+    // const handleChangeStatus = () => {
+    //     setStatus(!completed);
+    // };
 
     const handleAddChild = (childTitle?: string) => {
         addChild(childTitle);
@@ -72,7 +76,7 @@ const Element: FunctionComponent<ElementType> = observer(({ store, root }) => {
                     <Paper
                         sx={{
                             position: 'relative',
-                            width: 250,
+                            width: 400,
                             p: 2,
                             border: `solid 3px ${color}`
                         }}
@@ -81,7 +85,7 @@ const Element: FunctionComponent<ElementType> = observer(({ store, root }) => {
                             <Grid item alignSelf="center" xs={root ? 3 : 1}>
                                 <Typography>{title}</Typography>
                             </Grid>
-                            <Grid item xs={root ? 5 : 5}>
+                            {/* <Grid item xs={root ? 5 : 5}>
                                 <TextField
                                     size="small"
                                     value={localVal}
@@ -89,8 +93,8 @@ const Element: FunctionComponent<ElementType> = observer(({ store, root }) => {
                                     type="number"
                                     onBlur={handleConfirm}
                                 />
-                            </Grid>
-                            <Grid item xs={2}>
+                            </Grid> */}
+                            {/* <Grid item xs={2}>
                                 <IconButton
                                     color={completed ? 'primary' : 'success'}
                                     onClick={handleChangeStatus}
@@ -98,8 +102,17 @@ const Element: FunctionComponent<ElementType> = observer(({ store, root }) => {
                                 >
                                     {completed ? <TaskAltIcon /> : <RadioButtonUncheckedIcon />}
                                 </IconButton>
+                            </Grid> */}
+                            <Grid item xs={1}>
+                                <Typography>{execMode === 'C' ? '->' : '||'}</Typography>
                             </Grid>
-                            <Grid item xs={2}>
+                            <Grid item xs={4}>
+                                <Typography>{TaskStatusDescr[status].name}</Typography>
+                            </Grid>
+                            <Grid item xs={1}>
+                                <NewStatusMenu store={store} />
+                            </Grid>
+                            <Grid item xs={1}>
                                 <AddButton
                                     icon
                                     defaultName
